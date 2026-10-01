@@ -18,12 +18,11 @@ def run_scratch_bot():
     password = os.environ.get("SCRATCH_PASS")
     project_id = os.environ.get("SCRATCH_PROJECT_ID")
 
-    # Log into Scratch
+    # Connect to Scratch Cloud
     session = sa.login(username, password)
-    cloud = session.connect_cloud(project_id)
-
-    # Use the updated CloudEvents class instead of CloudRequests
-    events = sa.CloudEvents(project_id)
+    
+    # Use TwocanEvents or WsCloudEvents for cloud monitoring
+    events = sa.TwocanEvents(project_id)
 
     @events.event
     def on_ready():
@@ -31,7 +30,7 @@ def run_scratch_bot():
 
     @events.event
     def on_set(event):
-        # Event is triggered whenever a cloud variable changes
+        # Triggered whenever a cloud variable changes
         print(f"Variable updated: {event.var} = {event.value}")
 
     events.start()
