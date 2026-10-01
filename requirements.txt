@@ -1,2 +1,2 @@
-scratchattach==1.7.6
+scratchattach==1.7.4
 flask
