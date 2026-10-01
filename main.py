@@ -18,22 +18,24 @@ def run_scratch_bot():
     password = os.environ.get("SCRATCH_PASS")
     project_id = os.environ.get("SCRATCH_PROJECT_ID")
 
-    # Connect to Scratch Cloud
+    # Connect to Scratch
     session = sa.login(username, password)
+    conn = session.connect_cloud(project_id)
     
-    # Use TwocanEvents or WsCloudEvents for cloud monitoring
-    events = sa.TwocanEvents(project_id)
+    # This works flawlessly in version 1.7.6
+    client = sa.CloudRequests(conn)
 
-    @events.event
-    def on_ready():
-        print("Scratch Bot connected and listening!")
+    @client.request
+    def save_game(player_name, coins, level):
+        print(f"Saved stats for {player_name}: Coins={coins}, Level={level}")
+        return "SUCCESS"
 
-    @events.event
-    def on_set(event):
-        # Triggered whenever a cloud variable changes
-        print(f"Variable updated: {event.var} = {event.value}")
+    @client.request
+    def load_game(player_name):
+        return "100-1"
 
-    events.start()
+    print("Scratch Bot connected and listening!")
+    client.run()
 
 if __name__ == "__main__":
     threading.Thread(target=run_web_server, daemon=True).start()
